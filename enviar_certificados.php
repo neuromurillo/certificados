@@ -92,7 +92,7 @@ $pdf->Cell(0, 8, 'Academia Mexicana de Neurología - Certificado válido en lín
         $mail->Host = 'smtp-relay.brevo.com'; // Cambia por tu servidor SMTP
         $mail->SMTPAuth = true;
         $mail->Username = 'a07ea1001@smtp-brevo.com'; // Cambia por tu email
-        $mail->Password = 'bsk4jY0trJ5w9ek'; // Cambia por tu contraseña
+        $mail->Password = getenv('SMTP_KEY'); // Cambia por tu contraseña
         $mail->SMTPSecure = 'tls'; // O 'ssl' según tu servidor
         $mail->Port = 2525; // O 465 si usas SSL
 
