@@ -11,6 +11,9 @@ include 'config.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 // Validar ID y obtener datos
 $id = intval($_GET['id']);
 $resultado = $conexion->query("SELECT a.*, c.nombre_curso, c.fecha FROM asistentes a JOIN cursos c ON a.curso_id=c.id WHERE a.id=$id");
@@ -73,7 +76,7 @@ $pdf->MultiCell(0, 10, 'Presidente de la Academia: Dr. Carlos Cantú Brito', 0, 
 
 
 // ✅ QR más abajo
-$qrContent = $qrContent = 'http://192.168.100.36/certificados/verificar.php?codigo='.$asistente['codigo'];
+$qrContent = $_ENV['APP_URL'] . '/verificar.php?codigo=' . $asistente['codigo'];
 $pdf->write2DBarcode($qrContent, 'QRCODE,H', 95, 225, 25, 25);
 
 $pdf->SetFont('helvetica', '', 10);

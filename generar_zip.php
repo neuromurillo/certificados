@@ -9,6 +9,9 @@ if (!isset($_SESSION['autenticado'])) {
 require_once('tcpdf/tcpdf.php');
 include 'config.php';
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 $curso_id = intval($_GET['curso_id']);
 $asistentes = $conexion->query("SELECT a.*, c.nombre_curso, c.fecha 
                                 FROM asistentes a 
@@ -73,7 +76,7 @@ if (file_exists(__DIR__ . '/firma.png')) {
     $pdf->MultiCell(0, 10, 'Presidente de la Academia: Dr. Carlos Cantú Brito', 0, 'C');
 
 // ✅ QR más abajo
-$qrContent = $qrContent = 'http://192.168.100.36/certificados/verificar.php?codigo='.$datos['codigo'];
+$qrContent = $_ENV['APP_URL'] . '/verificar.php?codigo=' . $datos['codigo'];
 $pdf->write2DBarcode($qrContent, 'QRCODE,H', 95, 225, 25, 25);
 
 $pdf->SetFont('helvetica', '', 10);

@@ -9,6 +9,10 @@ if (!isset($_SESSION['autenticado'])) {
 require_once('tcpdf/tcpdf.php');
 require_once __DIR__ . '/vendor/autoload.php'; // Autoload de Composer
 
+// Cargar .env desde la raíz
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__); 
+$dotenv->load();
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -69,7 +73,7 @@ if (file_exists(__DIR__ . '/firma.png')) {
     $pdf->MultiCell(0, 10, 'Presidente de la Academia: Dr. Carlos Cantú Brito', 0, 'C');
 
 // ✅ QR más abajo
-$qrContent = $qrContent = 'http://192.168.100.36/certificados/verificar.php?codigo='.$datos['codigo'];
+$qrContent = $_ENV['APP_URL'] . '/verificar.php?codigo=' . $datos['codigo'];
 $pdf->write2DBarcode($qrContent, 'QRCODE,H', 95, 225, 25, 25);
 
 $pdf->SetFont('helvetica', '', 10);
@@ -89,14 +93,14 @@ $pdf->Cell(0, 8, 'Academia Mexicana de Neurología - Certificado válido en lín
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = 'smtp-relay.brevo.com'; // Cambia por tu servidor SMTP
+        $mail->Host = $_ENV['SMTP_HOST']; // Cambia por tu servidor SMTP
         $mail->SMTPAuth = true;
-        $mail->Username = 'a07ea1001@smtp-brevo.com'; // Cambia por tu email
-        $mail->Password = getenv('SMTP_KEY'); // Cambia por tu contraseña
-        $mail->SMTPSecure = 'tls'; // O 'ssl' según tu servidor
-        $mail->Port = 2525; // O 465 si usas SSL
+        $mail->Username = $_ENV['SMTP_USER']; // Cambia por tu email
+        $mail->Password = $_ENV['SMTP_KEY']; // Cambia por tu contraseña
+        $mail->SMTPSecure = $_ENV['SMTP_SECURE']; // O 'ssl' según tu servidor
+        $mail->Port = $_ENV['SMTP_PORT']; // O 465 si usas SSL
 
-        $mail->setFrom('luismurillo@ipao.com.mx', 'Academia Mexicana de Neurología');
+        $mail->setFrom($_ENV['MAIL_FROM'], $_ENV['MAIL_FROM_NAME']);
         $mail->addAddress($datos['email']); // Email del asistente
         $mail->Subject = 'Tu certificado del curso '.$datos['nombre_curso'];
         $mail->Body = "Estimado {$datos['nombre']},\n\nAdjunto encontrarás tu certificado del curso {$datos['nombre_curso']}.\n\nSaludos,\nAcademia Mexicana de Neurología";
